@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ONIX - Atomic musl base, persistent Nix toolbox</title>
+    <meta name="description" content="ONIX is an atomic musl operating system built from scratch with moss and boulder, with a persistent Nix toolbox on top.">
+    <link rel="icon" href="assets/onix.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#top" aria-label="ONIX home">
+            <img src="assets/onix.svg" alt="" width="34" height="34">
+            <span>ONIX</span>
+        </a>
+        <nav aria-label="Primary">
+            <a href="#architecture">Architecture</a>
+            <a href="#contract">Contract</a>
+            <a href="#validation">Validation</a>
+            <a href="#roadmap">Roadmap</a>
+        </nav>
+    </header>
+
+    <main id="top">
+        <section class="hero">
+            <div class="hero-copy">
+                <p class="kicker">atomic musl base / persistent Nix toolbox</p>
+                <h1>ONIX</h1>
+                <p class="lead">A small operating system built from scratch where moss owns the machine and Nix owns the toolbox.</p>
+                <p class="summary">The base is musl, transactional, and auditable. The software long tail lives above it in a persistent multi-user Nix plane. The point is not novelty for its own sake; the point is a machine that can move forward and roll back without dragging your working environment through the blast radius.</p>
+                <div class="actions">
+                    <a class="button primary" href="#architecture">Read the model</a>
+                    <a class="button secondary" href="#contract">Inspect ownership</a>
+                </div>
+            </div>
+            <aside class="identity-panel" aria-label="ONIX identity">
+                <img src="assets/onix.svg" alt="ONIX logo">
+                <dl>
+                    <div>
+                        <dt>libc</dt>
+                        <dd>musl</dd>
+                    </div>
+                    <div>
+                        <dt>machine</dt>
+                        <dd>moss</dd>
+                    </div>
+                    <div>
+                        <dt>toolbox</dt>
+                        <dd>Nix</dd>
+                    </div>
+                    <div>
+                        <dt>magic</dt>
+                        <dd>6649</dd>
+                    </div>
+                </dl>
+            </aside>
+        </section>
+
+        <section class="rule">
+            <span>core rule</span>
+            <strong>moss controls the machine. Nix controls the toolbox.</strong>
+        </section>
+
+        <section class="section" id="architecture">
+            <div class="section-title">
+                <p class="kicker">Architecture</p>
+                <h2>Two planes and a deliberately narrow seam.</h2>
+            </div>
+            <div class="planes">
+                <article>
+                    <span class="label blue">machine plane</span>
+                    <h3>Atomic state</h3>
+                    <p>moss owns <code>/usr</code>, the kernel, initrd, boot entries, firmware, Mesa, PipeWire, portals, and the compositor. It is the hard layer.</p>
+                </article>
+                <article>
+                    <span class="label orange">integration seam</span>
+                    <h3>Declared glue</h3>
+                    <p><code>onix-nix-integration</code> seeds nix-daemon, nixbld users, defaults, shell hooks, runtime dirs, and graphics bridge state.</p>
+                </article>
+                <article>
+                    <span class="label blue">toolbox plane</span>
+                    <h3>Persistent work</h3>
+                    <p>Nix owns <code>/nix</code>, user profiles, dev shells, flakes, language stacks, and GUI leaf apps. It is the living workspace.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section split" id="contract">
+            <div>
+                <p class="kicker">Ownership contract</p>
+                <h2>No surface has two owners.</h2>
+                <p>ONIX should make ownership boring and visible. If a rollback happens, you should know exactly which plane moved and which one stayed still.</p>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Surface</th>
+                            <th>Owner</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                    <td><code>/usr</code></td>
+                    <td>moss</td>
+                    <td>stateless machine payload</td>
+                </tr><tr>
+                    <td><code>/.moss</code></td>
+                    <td>moss</td>
+                    <td>content store and transaction history</td>
+                </tr><tr>
+                    <td><code>/boot</code></td>
+                    <td>moss</td>
+                    <td>kernel, initrd, BLS entries</td>
+                </tr><tr>
+                    <td><code>/etc/nix</code></td>
+                    <td>onix-nix-integration</td>
+                    <td>declared defaults, no installer drift</td>
+                </tr><tr>
+                    <td><code>/nix</code></td>
+                    <td>Nix</td>
+                    <td>persistent store, daemon, profiles</td>
+                </tr><tr>
+                    <td><code>/run/opengl-driver</code></td>
+                    <td>ONIX seam</td>
+                    <td>host graphics bridge for Nix apps</td>
+                </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section developer">
+            <div class="manual-card">
+                <p class="kicker">CLI shape</p>
+                <pre><code>$ onix status
+active fstx: 6649-a17c
+boot entry:  onix-6649-a17c.conf
+nix daemon:  healthy
+etc drift:   2 local overrides
+opengl:      coherent
+
+$ onix rollback
+plane:       machine
+/nix:        untouched</code></pre>
+            </div>
+            <div class="notes">
+                <article>
+                    <h3>Alpine is the forge</h3>
+                    <p>The quarry host is scaffolding: build moss, boulder, and the first stones there, then discard it.</p>
+                </article>
+                <article>
+                    <h3>The base stays short</h3>
+                    <p>Busybox first, uutils after proof, and only the essentials. Nix covers the long tail.</p>
+                </article>
+                <article>
+                    <h3>Graphics is a system boundary</h3>
+                    <p><code>/run/opengl-driver</code> is the bridge where Nix GUI apps meet the active machine stack.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section" id="validation">
+            <div class="section-title">
+                <p class="kicker">Validation</p>
+                <h2>The composition matrix is the real release gate.</h2>
+            </div>
+            <div class="checks">
+                <article>
+                    <strong>01</strong>
+                    <h3>Nix tool survives reboot</h3>
+                    <p><code>nix profile install nixpkgs#ripgrep</code>, reboot, and confirm it remains on PATH.</p>
+                </article>
+                <article>
+                    <strong>02</strong>
+                    <h3>moss rollback leaves Nix alone</h3>
+                    <p>Roll machine state back and verify profiles, store, and daemon remain consistent.</p>
+                </article>
+                <article>
+                    <strong>03</strong>
+                    <h3>GC boundaries hold</h3>
+                    <p><code>moss state prune</code> and <code>nix store gc</code> run back-to-back without cross-corruption.</p>
+                </article>
+                <article>
+                    <strong>04</strong>
+                    <h3>OpenGL bridge coheres</h3>
+                    <p>Rollback Mesa and confirm Nix GUI apps render against the previous active stack.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section roadmap" id="roadmap">
+            <div class="section-title">
+                <p class="kicker">Roadmap</p>
+                <h2>Small gates. Real exits.</h2>
+            </div>
+            <div class="phases">
+                <article class="phase">
+                    <span>phase 0</span>
+                    <h3>Forge</h3>
+                    <p>moss and boulder running on the Alpine musl quarry</p>
+                </article><article class="phase">
+                    <span>phase 1</span>
+                    <h3>Base</h3>
+                    <p>first self-owned musl stone set and local repo</p>
+                </article><article class="phase">
+                    <span>phase 2</span>
+                    <h3>Image</h3>
+                    <p>bootable ONIX VM with moss state rollback</p>
+                </article><article class="phase">
+                    <span>phase 3</span>
+                    <h3>Nix</h3>
+                    <p>multi-user Nix plane with independent rollback tests</p>
+                </article><article class="phase">
+                    <span>phase 5</span>
+                    <h3>Desktop</h3>
+                    <p>Wayland, Mesa, portals, and the OpenGL bridge</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="deploy">
+            <div>
+                <p class="kicker">Website</p>
+                <h2>Static by construction.</h2>
+                <p>The Rust generator emits plain files to <code>dist/</code>. GitHub Actions publishes that directory to <code>gh-pages</code> with <code>CNAME</code> set to <code>onix-os.com</code>.</p>
+            </div>
+            <pre><code>nix develop
+just build
+just serve</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <a class="brand" href="#top" aria-label="ONIX home">
+            <img src="assets/onix.svg" alt="" width="28" height="28">
+            <span>ONIX</span>
+        </a>
+        <p>Atomic musl base. Persistent Nix toolbox. Built with moss and boulder.</p>
+    </footer>
+</body>
+</html>
