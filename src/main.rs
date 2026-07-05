@@ -24,73 +24,65 @@ fn main() -> io::Result<()> {
 
 fn html() -> String {
     let contract_rows = [
-        ("/usr", "moss", "atomic machine state"),
-        ("/.moss", "moss", "content store + fstx history"),
-        ("/nix", "Nix", "persistent toolbox and profiles"),
+        ("/usr", "moss", "stateless machine payload"),
+        ("/.moss", "moss", "content store and transaction history"),
+        ("/boot", "moss", "kernel, initrd, BLS entries"),
+        (
+            "/etc/nix",
+            "onix-nix-integration",
+            "declared defaults, no installer drift",
+        ),
+        ("/nix", "Nix", "persistent store, daemon, profiles"),
         (
             "/run/opengl-driver",
             "ONIX seam",
-            "graphics bridge for Nix GUI apps",
-        ),
-        (
-            "setuid + kernel modules",
-            "moss only",
-            "no toolbox ownership",
+            "host graphics bridge for Nix apps",
         ),
     ];
 
-    let phase_cards = [
+    let roadmap = [
         (
-            "00",
+            "0",
             "Forge",
-            "Alpine musl VM builds moss, boulder, and the first stones.",
-            "active",
+            "moss and boulder running on the Alpine musl quarry",
         ),
         (
-            "01",
-            "Base Stones",
-            "Author the smallest musl userland and local onix moss repo.",
-            "",
+            "1",
+            "Base",
+            "first self-owned musl stone set and local repo",
+        ),
+        ("2", "Image", "bootable ONIX VM with moss state rollback"),
+        (
+            "3",
+            "Nix",
+            "multi-user Nix plane with independent rollback tests",
         ),
         (
-            "02",
-            "First Boot",
-            "Boot ONIX in QEMU with BLS entries and moss state history.",
-            "",
-        ),
-        (
-            "03",
-            "Nix Plane",
-            "Prove multi-user Nix and moss rollbacks remain independent.",
-            "",
-        ),
-        (
-            "05",
+            "5",
             "Desktop",
-            "Make Nix GL apps render through the machine-owned graphics stack.",
-            "",
+            "Wayland, Mesa, portals, and the OpenGL bridge",
         ),
     ];
 
     let contract = contract_rows
         .iter()
-        .map(|(surface, owner, note)| {
+        .map(|(path, owner, note)| {
             format!(
-                r#"<div class="contract-row">
-                    <code>{surface}</code>
-                    <strong>{owner}</strong>
-                    <span>{note}</span>
-                </div>"#
+                r#"<tr>
+                    <td><code>{path}</code></td>
+                    <td>{owner}</td>
+                    <td>{note}</td>
+                </tr>"#
             )
         })
         .collect::<String>();
 
-    let phases = phase_cards
+    let roadmap_items = roadmap
         .iter()
-        .map(|(num, title, body, state)| {
+        .map(|(num, title, body)| {
             format!(
-                r#"<article class="phase {state}">
-                    <span>{num}</span>
+                r#"<article class="phase">
+                    <span>phase {num}</span>
                     <h3>{title}</h3>
                     <p>{body}</p>
                 </article>"#
@@ -110,191 +102,192 @@ fn html() -> String {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="ambient" aria-hidden="true">
-        <span class="beam beam-a"></span>
-        <span class="beam beam-b"></span>
-        <span class="beam beam-c"></span>
-    </div>
-
-    <header class="site-header">
+    <header class="topbar">
         <a class="brand" href="#top" aria-label="ONIX home">
-            <img src="assets/onix.svg" alt="" width="38" height="38">
+            <img src="assets/onix.svg" alt="" width="34" height="34">
             <span>ONIX</span>
         </a>
         <nav aria-label="Primary">
             <a href="#architecture">Architecture</a>
             <a href="#contract">Contract</a>
+            <a href="#validation">Validation</a>
             <a href="#roadmap">Roadmap</a>
-            <a href="#deploy">Deploy</a>
         </nav>
     </header>
 
     <main id="top">
         <section class="hero">
             <div class="hero-copy">
-                <p class="eyebrow">scratch-built musl OS / atomic base / persistent Nix</p>
+                <p class="kicker">atomic musl base / persistent Nix toolbox</p>
                 <h1>ONIX</h1>
-                <p class="lede">The hard machine layer stays moss-managed and atomic. The developer world grows in a persistent Nix toolbox. Roll one back without corrupting the other.</p>
-                <div class="hero-actions" aria-label="Project focus">
-                    <a class="button primary" href="#architecture">Trace the stack</a>
-                    <a class="button ghost" href="#deploy">Publish path</a>
+                <p class="lead">A small operating system built from scratch where moss owns the machine and Nix owns the toolbox.</p>
+                <p class="summary">The base is musl, transactional, and auditable. The software long tail lives above it in a persistent multi-user Nix plane. The point is not novelty for its own sake; the point is a machine that can move forward and roll back without dragging your working environment through the blast radius.</p>
+                <div class="actions">
+                    <a class="button primary" href="#architecture">Read the model</a>
+                    <a class="button secondary" href="#contract">Inspect ownership</a>
                 </div>
             </div>
-
-            <div class="hero-console" aria-label="ONIX build console preview">
-                <div class="console-top">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <strong>quarry:/build/onix</strong>
-                </div>
-                <div class="console-body">
-                    <p><span class="prompt">$</span> make phase 005</p>
-                    <p class="ok">stone:onix-hello built, indexed, installed</p>
-                    <p><span class="prompt">$</span> moss state list</p>
-                    <p>active <b>6649-a17c</b> / previous <b>6649-93fd</b></p>
-                    <p><span class="prompt">$</span> onix status --planes</p>
-                    <div class="status-bars">
-                        <i style="--value: 74%"></i>
-                        <i style="--value: 91%"></i>
-                        <i style="--value: 58%"></i>
+            <aside class="identity-panel" aria-label="ONIX identity">
+                <img src="assets/onix.svg" alt="ONIX logo">
+                <dl>
+                    <div>
+                        <dt>libc</dt>
+                        <dd>musl</dd>
                     </div>
-                    <p class="ok">machine coherent / nix untouched / opengl bridge ready</p>
-                </div>
-                <div class="console-orbit" aria-hidden="true">
-                    <img src="assets/onix.svg" alt="">
-                </div>
+                    <div>
+                        <dt>machine</dt>
+                        <dd>moss</dd>
+                    </div>
+                    <div>
+                        <dt>toolbox</dt>
+                        <dd>Nix</dd>
+                    </div>
+                    <div>
+                        <dt>magic</dt>
+                        <dd>6649</dd>
+                    </div>
+                </dl>
+            </aside>
+        </section>
+
+        <section class="rule">
+            <span>core rule</span>
+            <strong>moss controls the machine. Nix controls the toolbox.</strong>
+        </section>
+
+        <section class="section" id="architecture">
+            <div class="section-title">
+                <p class="kicker">Architecture</p>
+                <h2>Two planes and a deliberately narrow seam.</h2>
+            </div>
+            <div class="planes">
+                <article>
+                    <span class="label blue">machine plane</span>
+                    <h3>Atomic state</h3>
+                    <p>moss owns <code>/usr</code>, the kernel, initrd, boot entries, firmware, Mesa, PipeWire, portals, and the compositor. It is the hard layer.</p>
+                </article>
+                <article>
+                    <span class="label orange">integration seam</span>
+                    <h3>Declared glue</h3>
+                    <p><code>onix-nix-integration</code> seeds nix-daemon, nixbld users, defaults, shell hooks, runtime dirs, and graphics bridge state.</p>
+                </article>
+                <article>
+                    <span class="label blue">toolbox plane</span>
+                    <h3>Persistent work</h3>
+                    <p>Nix owns <code>/nix</code>, user profiles, dev shells, flakes, language stacks, and GUI leaf apps. It is the living workspace.</p>
+                </article>
             </div>
         </section>
 
-        <section class="ticker" aria-label="ONIX project markers">
+        <section class="section split" id="contract">
             <div>
-                <span>moss owns /usr</span>
-                <span>Nix owns /nix</span>
-                <span>musl base</span>
-                <span>glibc apps ride above</span>
-                <span>rollback drills required</span>
-                <span>6649 is the magic number</span>
+                <p class="kicker">Ownership contract</p>
+                <h2>No surface has two owners.</h2>
+                <p>ONIX should make ownership boring and visible. If a rollback happens, you should know exactly which plane moved and which one stayed still.</p>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Surface</th>
+                            <th>Owner</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {contract}
+                    </tbody>
+                </table>
             </div>
         </section>
 
-        <section class="section architecture" id="architecture">
-            <div class="section-heading">
-                <p class="eyebrow">Architecture</p>
-                <h2>Three layers with one rule: no silent ownership drift.</h2>
+        <section class="section developer">
+            <div class="manual-card">
+                <p class="kicker">CLI shape</p>
+                <pre><code>$ onix status
+active fstx: 6649-a17c
+boot entry:  onix-6649-a17c.conf
+nix daemon:  healthy
+etc drift:   2 local overrides
+opengl:      coherent
+
+$ onix rollback
+plane:       machine
+/nix:        untouched</code></pre>
             </div>
-            <div class="stack-grid">
-                <article class="stack-card toolbox">
-                    <span>01</span>
-                    <h3>User toolbox plane</h3>
-                    <p>Dev shells, profiles, flakes, language stacks, GUI leaf apps, and the long tail live in persistent Nix.</p>
-                    <code>/nix/store -> user velocity</code>
+            <div class="notes">
+                <article>
+                    <h3>Alpine is the forge</h3>
+                    <p>The quarry host is scaffolding: build moss, boulder, and the first stones there, then discard it.</p>
                 </article>
-                <article class="stack-card seam">
-                    <span>02</span>
-                    <h3>Integration seam</h3>
-                    <p>ONIX stones seed nix-daemon, nixbld users, defaults, runtime dirs, locale glue, and the OpenGL bridge.</p>
-                    <code>/run/opengl-driver -> coherent GUI</code>
+                <article>
+                    <h3>The base stays short</h3>
+                    <p>Busybox first, uutils after proof, and only the essentials. Nix covers the long tail.</p>
                 </article>
-                <article class="stack-card machine">
-                    <span>03</span>
-                    <h3>Machine plane</h3>
-                    <p>musl base, kernel, initrd, boot entries, firmware, Mesa, PipeWire, portals, and compositor are moss state.</p>
-                    <code>/.moss -> rollback memory</code>
+                <article>
+                    <h3>Graphics is a system boundary</h3>
+                    <p><code>/run/opengl-driver</code> is the bridge where Nix GUI apps meet the active machine stack.</p>
                 </article>
             </div>
         </section>
 
-        <section class="split-lab" id="contract">
-            <div class="lab-copy">
-                <p class="eyebrow">Constitution</p>
-                <h2>The OS is boring where it must be, sharp where it matters.</h2>
-                <p>ONIX is built to make the contract visible. Every surface has a single owner. Every rollback has a blast radius. Every escape hatch is explicit.</p>
+        <section class="section" id="validation">
+            <div class="section-title">
+                <p class="kicker">Validation</p>
+                <h2>The composition matrix is the real release gate.</h2>
             </div>
-            <div class="contract-table" aria-label="Ownership contract">
-                {contract}
-            </div>
-        </section>
-
-        <section class="section feature-band">
-            <article>
-                <span class="chip">atomic</span>
-                <h3>Machine updates are transactions.</h3>
-                <p>moss swaps active state, preserves history, and gives the boot menu a memory of working systems.</p>
-            </article>
-            <article>
-                <span class="chip">persistent</span>
-                <h3>The toolbox survives the ground shift.</h3>
-                <p>Nix profiles, stores, and dev environments stay on /persist and do not belong to the machine manager.</p>
-            </article>
-            <article>
-                <span class="chip">developer-first</span>
-                <h3>The CLI says which plane it touches.</h3>
-                <p><code>onix update</code>, <code>onix rollback</code>, <code>onix doctor</code>, and <code>onix gc</code> keep the boundary legible.</p>
-            </article>
-        </section>
-
-        <section class="section matrix">
-            <div class="section-heading">
-                <p class="eyebrow">Phase 3 gate</p>
-                <h2>The composition matrix is the product.</h2>
-            </div>
-            <div class="matrix-grid">
-                <div class="matrix-cell pass">
-                    <span>PASS</span>
-                    <strong>nix profile install ripgrep -> reboot</strong>
-                    <p>tool still on PATH</p>
-                </div>
-                <div class="matrix-cell pass">
-                    <span>PASS</span>
-                    <strong>moss rollback -> reboot</strong>
-                    <p>Nix profile untouched</p>
-                </div>
-                <div class="matrix-cell warn">
-                    <span>RISK</span>
-                    <strong>musl Mesa meets glibc app</strong>
-                    <p>solve at OpenGL seam</p>
-                </div>
-                <div class="matrix-cell pass">
-                    <span>PASS</span>
-                    <strong>moss prune + nix store gc</strong>
-                    <p>no cross-corruption</p>
-                </div>
+            <div class="checks">
+                <article>
+                    <strong>01</strong>
+                    <h3>Nix tool survives reboot</h3>
+                    <p><code>nix profile install nixpkgs#ripgrep</code>, reboot, and confirm it remains on PATH.</p>
+                </article>
+                <article>
+                    <strong>02</strong>
+                    <h3>moss rollback leaves Nix alone</h3>
+                    <p>Roll machine state back and verify profiles, store, and daemon remain consistent.</p>
+                </article>
+                <article>
+                    <strong>03</strong>
+                    <h3>GC boundaries hold</h3>
+                    <p><code>moss state prune</code> and <code>nix store gc</code> run back-to-back without cross-corruption.</p>
+                </article>
+                <article>
+                    <strong>04</strong>
+                    <h3>OpenGL bridge coheres</h3>
+                    <p>Rollback Mesa and confirm Nix GUI apps render against the previous active stack.</p>
+                </article>
             </div>
         </section>
 
-        <section class="roadmap" id="roadmap">
-            <div class="section-heading">
-                <p class="eyebrow">Roadmap</p>
-                <h2>Phase gates over vibes.</h2>
+        <section class="section roadmap" id="roadmap">
+            <div class="section-title">
+                <p class="kicker">Roadmap</p>
+                <h2>Small gates. Real exits.</h2>
             </div>
-            <div class="phase-track">
-                {phases}
+            <div class="phases">
+                {roadmap_items}
             </div>
         </section>
 
-        <section class="deploy" id="deploy">
+        <section class="deploy">
             <div>
-                <p class="eyebrow">Static deploy</p>
-                <h2>Rust generates the site. GitHub Pages serves the artifact.</h2>
-                <p>The website is plain files: HTML, CSS, CNAME, .nojekyll, and logo assets. The workflow builds with Nix, publishes <code>dist/</code> to <code>gh-pages</code>, and keeps <code>onix-os.com</code> attached.</p>
+                <p class="kicker">Website</p>
+                <h2>Static by construction.</h2>
+                <p>The Rust generator emits plain files to <code>dist/</code>. GitHub Actions publishes that directory to <code>gh-pages</code> with <code>CNAME</code> set to <code>onix-os.com</code>.</p>
             </div>
-            <pre aria-label="GitHub Pages deploy command"><code>nix develop --command just build
-git push origin main
-
-# action:
-#   cargo run --release
-#   publish ./dist -> gh-pages
-#   serve onix-os.com</code></pre>
+            <pre><code>nix develop
+just build
+just serve</code></pre>
         </section>
     </main>
 
     <footer>
         <a class="brand" href="#top" aria-label="ONIX home">
-            <img src="assets/onix.svg" alt="" width="30" height="30">
+            <img src="assets/onix.svg" alt="" width="28" height="28">
             <span>ONIX</span>
         </a>
-        <p>Atomic musl base. Persistent Nix toolbox. Built from scratch with moss and boulder.</p>
+        <p>Atomic musl base. Persistent Nix toolbox. Built with moss and boulder.</p>
     </footer>
 </body>
 </html>
@@ -304,23 +297,19 @@ git push origin main
 
 fn css() -> &'static str {
     r#":root {
-    color-scheme: dark;
-    --bg: #070a0b;
-    --bg-2: #0b1113;
-    --panel: rgba(16, 24, 26, 0.78);
-    --panel-strong: rgba(21, 31, 34, 0.94);
-    --ink: #eef7ef;
-    --muted: #9aa9a4;
-    --line: rgba(205, 239, 222, 0.14);
-    --steel: #6fa2d7;
-    --steel-deep: #4f6e91;
-    --ember: #e7590f;
-    --ember-hot: #ff9a3d;
-    --moss: #8ab06e;
-    --cyan: #62e7d3;
-    --violet: #bca7ff;
-    --yellow: #f3cf65;
-    --shadow: rgba(0, 0, 0, 0.45);
+    color-scheme: light;
+    --paper: #f5f2ed;
+    --paper-2: #ebe4da;
+    --ink: #171a1c;
+    --muted: #5f6669;
+    --line: #d6ccc0;
+    --blue: #4f6e91;
+    --blue-2: #2d425c;
+    --blue-3: #dbe5ee;
+    --orange: #e7590f;
+    --orange-2: #9e3b0d;
+    --orange-3: #f7dccb;
+    --white: #fffaf3;
 }
 
 * {
@@ -336,40 +325,11 @@ body {
     margin: 0;
     color: var(--ink);
     background:
-        radial-gradient(circle at 12% 8%, rgba(231, 89, 15, 0.2), transparent 28rem),
-        radial-gradient(circle at 82% 12%, rgba(98, 231, 211, 0.14), transparent 30rem),
-        radial-gradient(circle at 76% 86%, rgba(111, 162, 215, 0.18), transparent 36rem),
-        linear-gradient(135deg, #070a0b 0%, #0c1113 42%, #091010 100%);
+        linear-gradient(90deg, rgba(79, 110, 145, 0.08) 1px, transparent 1px),
+        linear-gradient(rgba(79, 110, 145, 0.07) 1px, transparent 1px),
+        var(--paper);
+    background-size: 36px 36px;
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    overflow-x: hidden;
-}
-
-body::before {
-    position: fixed;
-    inset: 0;
-    z-index: -3;
-    pointer-events: none;
-    content: "";
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-    background-size: 42px 42px;
-    mask-image: linear-gradient(to bottom, black, transparent 86%);
-}
-
-body::after {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    pointer-events: none;
-    content: "";
-    background: repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 5px,
-        rgba(255, 255, 255, 0.025) 6px
-    );
-    opacity: 0.38;
 }
 
 a {
@@ -378,7 +338,9 @@ a {
 }
 
 code,
-pre {
+pre,
+.kicker,
+table {
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
@@ -390,23 +352,26 @@ p {
 }
 
 h1 {
-    margin-bottom: 22px;
-    font-size: clamp(5.4rem, 19vw, 15rem);
+    margin-bottom: 24px;
+    color: var(--blue-2);
+    font-size: clamp(5.2rem, 18vw, 14rem);
     line-height: 0.78;
     letter-spacing: 0;
 }
 
 h2 {
-    margin-bottom: 20px;
-    font-size: clamp(2.2rem, 5.4vw, 5.7rem);
-    line-height: 0.94;
+    margin-bottom: 18px;
+    color: var(--blue-2);
+    font-size: clamp(2.2rem, 5vw, 5rem);
+    line-height: 0.96;
     letter-spacing: 0;
 }
 
 h3 {
-    margin-bottom: 12px;
-    font-size: clamp(1.22rem, 2.4vw, 1.75rem);
-    line-height: 1.05;
+    margin-bottom: 10px;
+    color: var(--ink);
+    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    line-height: 1.12;
     letter-spacing: 0;
 }
 
@@ -415,604 +380,373 @@ p {
     line-height: 1.68;
 }
 
-.ambient {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-.beam {
-    position: absolute;
-    display: block;
-    width: 42vw;
-    height: 1px;
-    opacity: 0.62;
-    transform-origin: center;
-    animation: beam-sweep 13s linear infinite;
-}
-
-.beam-a {
-    top: 18%;
-    left: -12vw;
-    background: linear-gradient(90deg, transparent, var(--ember), transparent);
-}
-
-.beam-b {
-    top: 58%;
-    right: -16vw;
-    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-    animation-delay: -4s;
-}
-
-.beam-c {
-    bottom: 16%;
-    left: 22vw;
-    background: linear-gradient(90deg, transparent, var(--steel), transparent);
-    animation-delay: -8s;
-}
-
-.site-header {
+.topbar {
     position: sticky;
     top: 0;
-    z-index: 20;
+    z-index: 10;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
-    min-height: 76px;
-    padding: 16px clamp(20px, 5vw, 74px);
-    border-bottom: 1px solid var(--line);
-    background: rgba(7, 10, 11, 0.72);
-    backdrop-filter: blur(22px);
+    gap: 22px;
+    min-height: 72px;
+    padding: 16px clamp(20px, 5vw, 72px);
+    border-bottom: 2px solid var(--blue-2);
+    background: rgba(245, 242, 237, 0.94);
+    backdrop-filter: blur(14px);
 }
 
 .brand {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 11px;
+    color: var(--blue-2);
     font-weight: 900;
-    letter-spacing: 0;
 }
 
 .brand img {
     display: block;
-    filter: drop-shadow(0 0 16px rgba(231, 89, 15, 0.28));
 }
 
 nav {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
-    gap: 8px 24px;
-    color: var(--muted);
-    font-size: 0.94rem;
+    gap: 8px 22px;
+    color: var(--blue-2);
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 nav a {
-    position: relative;
-}
-
-nav a::after {
-    position: absolute;
-    right: 0;
-    bottom: -7px;
-    left: 0;
-    height: 1px;
-    content: "";
-    background: linear-gradient(90deg, var(--ember), var(--cyan));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 180ms ease;
+    border-bottom: 2px solid transparent;
 }
 
 nav a:hover {
-    color: var(--ink);
-}
-
-nav a:hover::after {
-    transform: scaleX(1);
+    border-color: var(--orange);
 }
 
 .hero {
-    position: relative;
-    min-height: calc(100svh - 76px);
     display: grid;
-    grid-template-columns: minmax(0, 0.95fr) minmax(340px, 0.78fr);
-    align-items: center;
-    gap: clamp(36px, 7vw, 104px);
-    padding: clamp(62px, 9vw, 124px) clamp(20px, 5vw, 74px) clamp(58px, 8vw, 92px);
-}
-
-.hero::after {
-    position: absolute;
-    right: clamp(20px, 5vw, 74px);
-    bottom: 24px;
-    left: clamp(20px, 5vw, 74px);
-    height: 1px;
-    content: "";
-    background: linear-gradient(90deg, transparent, var(--line), transparent);
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.52fr);
+    gap: clamp(32px, 7vw, 90px);
+    align-items: stretch;
+    padding: clamp(54px, 8vw, 104px) clamp(20px, 5vw, 72px);
 }
 
 .hero-copy {
-    max-width: 880px;
+    padding: clamp(18px, 3vw, 30px) 0;
 }
 
-.eyebrow {
-    margin-bottom: 16px;
-    color: var(--cyan);
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+.kicker {
+    margin-bottom: 14px;
+    color: var(--orange-2);
     font-size: 0.78rem;
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
-.lede {
-    max-width: 810px;
-    color: #d5ddd8;
-    font-size: clamp(1.22rem, 2.25vw, 1.75rem);
+.lead {
+    max-width: 820px;
+    color: var(--ink);
+    font-size: clamp(1.45rem, 2.8vw, 2.3rem);
+    line-height: 1.22;
 }
 
-.hero-actions {
+.summary {
+    max-width: 780px;
+    font-size: 1.06rem;
+}
+
+.actions {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-top: 34px;
+    margin-top: 30px;
 }
 
 .button {
-    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 48px;
-    padding: 14px 19px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 7px;
-    overflow: hidden;
+    min-height: 46px;
+    padding: 12px 17px;
+    border: 2px solid var(--blue-2);
+    border-radius: 4px;
     font-weight: 900;
-}
-
-.button::before {
-    position: absolute;
-    inset: 0;
-    content: "";
-    background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transform: translateX(-120%);
-}
-
-.button:hover::before {
-    animation: shimmer 740ms ease;
 }
 
 .button.primary {
-    color: #07100c;
-    background: linear-gradient(135deg, var(--cyan), #b7ffb1);
-    box-shadow: 0 16px 46px rgba(98, 231, 211, 0.18);
+    color: var(--white);
+    background: var(--blue-2);
 }
 
-.button.ghost {
-    background: rgba(255, 255, 255, 0.045);
+.button.secondary {
+    color: var(--blue-2);
+    background: var(--orange-3);
 }
 
-.hero-console {
-    position: relative;
-    isolation: isolate;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 14px;
+.identity-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 560px;
+    padding: clamp(24px, 4vw, 38px);
+    border: 2px solid var(--blue-2);
+    border-radius: 8px;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
-        rgba(9, 15, 17, 0.88);
-    box-shadow: 0 26px 90px var(--shadow);
-    transform: perspective(1200px) rotateY(-7deg) rotateX(2deg);
-    animation: console-float 7s ease-in-out infinite;
+        linear-gradient(135deg, var(--blue-3), transparent 55%),
+        var(--white);
+    box-shadow: 12px 12px 0 var(--orange);
 }
 
-.hero-console::before {
-    position: absolute;
-    inset: -1px;
-    z-index: -1;
-    border-radius: inherit;
-    content: "";
-    background: linear-gradient(145deg, rgba(231, 89, 15, 0.54), rgba(98, 231, 211, 0.4), rgba(111, 162, 215, 0.36));
-    filter: blur(24px);
-    opacity: 0.45;
+.identity-panel img {
+    width: min(100%, 360px);
+    align-self: center;
 }
 
-.console-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 44px;
-    padding: 0 16px;
-    border-bottom: 1px solid var(--line);
-    color: var(--muted);
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 0.78rem;
-}
-
-.console-top span {
-    width: 10px;
-    height: 10px;
-    border-radius: 99px;
-    background: var(--ember);
-}
-
-.console-top span:nth-child(2) {
-    background: var(--yellow);
-}
-
-.console-top span:nth-child(3) {
-    margin-right: 7px;
-    background: var(--moss);
-}
-
-.console-body {
-    position: relative;
-    min-height: 360px;
-    padding: clamp(22px, 4vw, 34px);
-    overflow: hidden;
-}
-
-.console-body::after {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    content: "";
-    background: linear-gradient(to bottom, transparent, rgba(98, 231, 211, 0.1), transparent);
-    transform: translateY(-100%);
-    animation: scan 5s linear infinite;
-}
-
-.console-body p {
-    margin-bottom: 14px;
-    color: #dce9e1;
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: clamp(0.84rem, 1.5vw, 1rem);
-}
-
-.console-body b {
-    color: var(--yellow);
-}
-
-.prompt {
-    color: var(--ember-hot);
-}
-
-.ok {
-    color: #a9ffbf !important;
-}
-
-.status-bars {
+.identity-panel dl {
     display: grid;
-    gap: 10px;
-    margin: 22px 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    margin: 34px 0 0;
+    border: 1px solid var(--blue-2);
+    background: var(--blue-2);
 }
 
-.status-bars i {
-    display: block;
-    width: 100%;
-    height: 10px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
-    overflow: hidden;
+.identity-panel div {
+    padding: 14px;
+    background: var(--white);
 }
 
-.status-bars i::before {
-    display: block;
-    width: var(--value);
-    height: 100%;
-    content: "";
-    border-radius: inherit;
-    background: linear-gradient(90deg, var(--ember), var(--cyan));
-    animation: load-bar 2.8s ease both;
+.identity-panel dt {
+    color: var(--orange-2);
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
-.console-orbit {
-    position: absolute;
-    right: -40px;
-    bottom: -48px;
+.identity-panel dd {
+    margin: 4px 0 0;
+    color: var(--blue-2);
+    font-size: 1.15rem;
+    font-weight: 900;
+}
+
+.rule {
     display: grid;
-    place-items: center;
-    width: 170px;
-    aspect-ratio: 1;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 999px;
-    background: rgba(7, 10, 11, 0.76);
-    backdrop-filter: blur(18px);
-    animation: orbit-pulse 4s ease-in-out infinite;
+    grid-template-columns: minmax(130px, 0.22fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: baseline;
+    padding: clamp(30px, 5vw, 54px) clamp(20px, 5vw, 72px);
+    color: var(--white);
+    background: var(--blue-2);
 }
 
-.console-orbit img {
-    width: 108px;
-    animation: mark-turn 18s linear infinite;
-}
-
-.ticker {
-    border-block: 1px solid var(--line);
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.035);
-}
-
-.ticker div {
-    display: flex;
-    gap: 40px;
-    width: max-content;
-    padding: 16px 0;
-    color: var(--muted);
+.rule span {
+    color: var(--orange-3);
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 0.9rem;
-    animation: ticker 24s linear infinite;
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
-.ticker span {
-    white-space: nowrap;
+.rule strong {
+    font-size: clamp(1.8rem, 4.6vw, 4.8rem);
+    line-height: 1;
 }
 
 .section,
-.split-lab,
-.roadmap,
 .deploy {
-    padding: clamp(58px, 9vw, 118px) clamp(20px, 5vw, 74px);
+    padding: clamp(54px, 8vw, 104px) clamp(20px, 5vw, 72px);
 }
 
-.section-heading {
+.section-title {
     max-width: 980px;
-    margin-bottom: clamp(28px, 5vw, 48px);
+    margin-bottom: 34px;
 }
 
-.stack-grid {
+.planes {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
 }
 
-.stack-card,
-.feature-band article,
+.planes article,
+.checks article,
 .phase,
-.matrix-cell,
-.contract-table,
+.notes article,
+.manual-card,
+.table-wrap,
 .deploy pre {
-    border: 1px solid var(--line);
-    background: var(--panel);
-    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
-    backdrop-filter: blur(18px);
-}
-
-.stack-card {
-    position: relative;
-    min-height: 360px;
-    padding: clamp(24px, 3.4vw, 36px);
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.stack-card::before {
-    position: absolute;
-    inset: 0 0 auto;
-    height: 5px;
-    content: "";
-}
-
-.stack-card.toolbox::before {
-    background: var(--moss);
-}
-
-.stack-card.seam::before {
-    background: var(--ember);
-}
-
-.stack-card.machine::before {
-    background: var(--steel);
-}
-
-.stack-card > span,
-.phase > span,
-.matrix-cell > span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 42px;
-    height: 26px;
-    margin-bottom: 84px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 999px;
-    color: var(--cyan);
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 0.75rem;
-    font-weight: 900;
-}
-
-.stack-card p {
-    min-height: 108px;
-}
-
-.stack-card code {
-    display: block;
-    padding: 12px;
-    border: 1px solid var(--line);
+    border: 2px solid var(--blue-2);
     border-radius: 8px;
-    color: var(--yellow);
-    background: rgba(0, 0, 0, 0.26);
+    background: var(--white);
 }
 
-.split-lab {
-    display: grid;
-    grid-template-columns: minmax(0, 0.72fr) minmax(360px, 1fr);
-    gap: clamp(30px, 7vw, 96px);
-    align-items: center;
-    border-block: 1px solid var(--line);
-    background:
-        linear-gradient(135deg, rgba(231, 89, 15, 0.12), transparent 42%),
-        linear-gradient(315deg, rgba(98, 231, 211, 0.09), transparent 38%);
+.planes article {
+    min-height: 320px;
+    padding: 24px;
 }
 
-.lab-copy {
-    max-width: 760px;
-}
-
-.contract-table {
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.contract-row {
-    display: grid;
-    grid-template-columns: minmax(120px, 0.7fr) minmax(88px, 0.34fr) minmax(0, 1fr);
-    gap: 16px;
-    align-items: center;
-    min-height: 66px;
-    padding: 16px 18px;
-    border-bottom: 1px solid var(--line);
-}
-
-.contract-row:last-child {
-    border-bottom: 0;
-}
-
-.contract-row code {
-    color: var(--yellow);
-}
-
-.contract-row strong {
-    color: var(--cyan);
-}
-
-.contract-row span {
-    color: var(--muted);
-}
-
-.feature-band {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-}
-
-.feature-band article {
-    min-height: 280px;
-    padding: 28px;
-    border-radius: 12px;
-}
-
-.chip {
+.label {
     display: inline-flex;
-    margin-bottom: 54px;
-    padding: 6px 10px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 999px;
-    color: #07100c;
-    background: linear-gradient(135deg, var(--ember-hot), var(--yellow));
+    margin-bottom: 64px;
+    padding: 6px 9px;
+    border-radius: 3px;
+    color: var(--white);
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
     font-size: 0.74rem;
     font-weight: 900;
+    text-transform: uppercase;
 }
 
-.matrix {
-    border-block: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.025);
+.label.blue {
+    background: var(--blue);
 }
 
-.matrix-grid {
+.label.orange {
+    background: var(--orange);
+}
+
+.split {
+    display: grid;
+    grid-template-columns: minmax(0, 0.7fr) minmax(360px, 1fr);
+    gap: clamp(28px, 6vw, 82px);
+    align-items: start;
+    border-block: 2px solid var(--line);
+    background: rgba(255, 250, 243, 0.52);
+}
+
+.table-wrap {
+    overflow: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+    font-size: 0.9rem;
+}
+
+th,
+td {
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    color: var(--white);
+    background: var(--blue-2);
+}
+
+td:first-child code {
+    color: var(--orange-2);
+    font-weight: 900;
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+.developer {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1fr);
+    gap: 16px;
+}
+
+.manual-card {
+    padding: 24px;
+    background: var(--blue-2);
+}
+
+.manual-card .kicker {
+    color: var(--orange-3);
+}
+
+pre {
+    margin: 0;
+    overflow: auto;
+}
+
+pre code {
+    color: #f7efe5;
+    line-height: 1.7;
+}
+
+.notes {
+    display: grid;
+    gap: 16px;
+}
+
+.notes article {
+    padding: 22px;
+    border-color: var(--orange-2);
+}
+
+.checks {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
+    gap: 16px;
 }
 
-.matrix-cell {
-    min-height: 220px;
+.checks article {
+    min-height: 260px;
     padding: 22px;
-    border-radius: 12px;
 }
 
-.matrix-cell span {
-    margin-bottom: 52px;
-}
-
-.matrix-cell strong {
-    display: block;
-    margin-bottom: 12px;
-    line-height: 1.25;
-}
-
-.matrix-cell.pass span {
-    color: #a9ffbf;
-}
-
-.matrix-cell.warn span {
-    color: var(--ember-hot);
+.checks strong {
+    display: inline-flex;
+    margin-bottom: 54px;
+    color: var(--orange);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 1.05rem;
 }
 
 .roadmap {
-    position: relative;
+    background: linear-gradient(180deg, transparent, rgba(79, 110, 145, 0.08));
 }
 
-.phase-track {
-    position: relative;
+.phases {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 14px;
-}
-
-.phase-track::before {
-    position: absolute;
-    top: 42px;
-    right: 8%;
-    left: 8%;
-    height: 2px;
-    content: "";
-    background: linear-gradient(90deg, var(--ember), var(--cyan), var(--steel));
-    opacity: 0.5;
+    gap: 12px;
 }
 
 .phase {
-    position: relative;
-    min-height: 250px;
-    padding: 24px;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.phase.active::after {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    height: 3px;
-    content: "";
-    background: linear-gradient(90deg, var(--ember), var(--cyan));
-    animation: phase-line 1.8s ease-in-out infinite alternate;
+    min-height: 230px;
+    padding: 20px;
 }
 
 .phase span {
-    margin-bottom: 58px;
-    background: rgba(7, 10, 11, 0.84);
+    display: inline-flex;
+    margin-bottom: 52px;
+    color: var(--orange-2);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 .deploy {
     display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(340px, 0.72fr);
-    gap: clamp(28px, 7vw, 92px);
+    grid-template-columns: minmax(0, 0.8fr) minmax(280px, 0.5fr);
+    gap: clamp(24px, 6vw, 72px);
     align-items: center;
-    border-top: 1px solid var(--line);
-    background: linear-gradient(135deg, rgba(111, 162, 215, 0.13), transparent 42%);
+    border-top: 2px solid var(--blue-2);
+    background: var(--paper-2);
 }
 
 .deploy p {
-    max-width: 780px;
+    max-width: 760px;
 }
 
 .deploy pre {
-    margin: 0;
-    padding: clamp(22px, 4vw, 34px);
-    border-radius: 12px;
-    overflow: auto;
-}
-
-.deploy code {
-    color: #dce9e1;
-    line-height: 1.75;
+    padding: 22px;
+    background: var(--blue-2);
 }
 
 footer {
@@ -1020,131 +754,38 @@ footer {
     align-items: center;
     justify-content: space-between;
     gap: 18px;
-    padding: 30px clamp(20px, 5vw, 74px);
-    border-top: 1px solid var(--line);
+    padding: 28px clamp(20px, 5vw, 72px);
+    border-top: 2px solid var(--blue-2);
+    background: var(--white);
 }
 
 footer p {
-    max-width: 720px;
+    max-width: 680px;
     margin: 0;
     text-align: right;
 }
 
-@keyframes beam-sweep {
-    0% {
-        transform: translateX(-18vw) rotate(-14deg);
-    }
-    100% {
-        transform: translateX(130vw) rotate(-14deg);
-    }
-}
-
-@keyframes console-float {
-    0%,
-    100% {
-        transform: perspective(1200px) rotateY(-7deg) rotateX(2deg) translateY(0);
-    }
-    50% {
-        transform: perspective(1200px) rotateY(-4deg) rotateX(3deg) translateY(-14px);
-    }
-}
-
-@keyframes scan {
-    0% {
-        transform: translateY(-100%);
-    }
-    100% {
-        transform: translateY(100%);
-    }
-}
-
-@keyframes load-bar {
-    from {
-        width: 0;
-    }
-}
-
-@keyframes orbit-pulse {
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(98, 231, 211, 0.14);
-    }
-    50% {
-        box-shadow: 0 0 0 18px rgba(98, 231, 211, 0);
-    }
-}
-
-@keyframes mark-turn {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes ticker {
-    from {
-        transform: translateX(100vw);
-    }
-    to {
-        transform: translateX(-100%);
-    }
-}
-
-@keyframes shimmer {
-    to {
-        transform: translateX(120%);
-    }
-}
-
-@keyframes phase-line {
-    from {
-        opacity: 0.35;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        scroll-behavior: auto !important;
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.001ms !important;
-    }
-}
-
 @media (max-width: 1080px) {
     .hero,
-    .split-lab,
+    .split,
+    .developer,
     .deploy {
         grid-template-columns: 1fr;
     }
 
-    .hero {
-        min-height: auto;
-    }
-
-    .hero-console {
-        max-width: 720px;
-        transform: none;
-    }
-
-    .stack-grid,
-    .feature-band,
-    .matrix-grid,
-    .phase-track {
+    .planes,
+    .checks,
+    .phases {
         grid-template-columns: 1fr;
     }
 
-    .phase-track::before {
-        display: none;
+    .identity-panel {
+        min-height: 0;
     }
 }
 
 @media (max-width: 720px) {
-    .site-header {
+    .topbar {
         position: static;
         align-items: flex-start;
         flex-direction: column;
@@ -1152,30 +793,22 @@ footer p {
 
     nav {
         justify-content: flex-start;
-        gap: 10px 18px;
     }
 
     h1 {
-        font-size: clamp(4.6rem, 24vw, 8rem);
+        font-size: clamp(4.4rem, 24vw, 8rem);
+    }
+
+    .rule {
+        grid-template-columns: 1fr;
     }
 
     .button {
         width: 100%;
     }
 
-    .console-orbit {
-        right: 16px;
-        bottom: -56px;
-        width: 124px;
-    }
-
-    .console-orbit img {
-        width: 82px;
-    }
-
-    .contract-row {
-        grid-template-columns: 1fr;
-        gap: 7px;
+    .identity-panel {
+        box-shadow: 7px 7px 0 var(--orange);
     }
 
     footer {
