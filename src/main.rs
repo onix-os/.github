@@ -297,19 +297,24 @@ just serve</code></pre>
 
 fn css() -> &'static str {
     r#":root {
-    color-scheme: light;
-    --paper: #f5f2ed;
-    --paper-2: #ebe4da;
-    --ink: #171a1c;
-    --muted: #5f6669;
-    --line: #d6ccc0;
+    color-scheme: dark;
+    --bg: #030405;
+    --bg-2: #07090a;
+    --section: #090c0e;
+    --section-alt: #0d1114;
+    --panel: #101518;
+    --panel-2: #141a1e;
+    --ink: #eff3f0;
+    --text: #cbd3d0;
+    --muted: #798581;
+    --line: rgba(222, 234, 229, 0.1);
+    --line-strong: rgba(222, 234, 229, 0.18);
     --blue: #4f6e91;
-    --blue-2: #2d425c;
-    --blue-3: #dbe5ee;
+    --blue-soft: rgba(79, 110, 145, 0.18);
+    --blue-faint: rgba(79, 110, 145, 0.07);
     --orange: #e7590f;
-    --orange-2: #9e3b0d;
-    --orange-3: #f7dccb;
-    --white: #fffaf3;
+    --orange-soft: rgba(231, 89, 15, 0.18);
+    --orange-faint: rgba(231, 89, 15, 0.07);
 }
 
 * {
@@ -318,6 +323,7 @@ fn css() -> &'static str {
 
 html {
     scroll-behavior: smooth;
+    background: var(--bg);
 }
 
 body {
@@ -325,11 +331,23 @@ body {
     margin: 0;
     color: var(--ink);
     background:
-        linear-gradient(90deg, rgba(79, 110, 145, 0.08) 1px, transparent 1px),
-        linear-gradient(rgba(79, 110, 145, 0.07) 1px, transparent 1px),
-        var(--paper);
-    background-size: 36px 36px;
+        radial-gradient(circle at 18% 0%, var(--blue-faint), transparent 34rem),
+        radial-gradient(circle at 86% 10%, var(--orange-faint), transparent 30rem),
+        linear-gradient(180deg, var(--bg), var(--bg-2) 38rem, var(--bg));
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body::before {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent 75%);
 }
 
 a {
@@ -353,7 +371,7 @@ p {
 
 h1 {
     margin-bottom: 24px;
-    color: var(--blue-2);
+    color: var(--ink);
     font-size: clamp(5.2rem, 18vw, 14rem);
     line-height: 0.78;
     letter-spacing: 0;
@@ -361,8 +379,8 @@ h1 {
 
 h2 {
     margin-bottom: 18px;
-    color: var(--blue-2);
-    font-size: clamp(2.2rem, 5vw, 5rem);
+    color: var(--ink);
+    font-size: clamp(2.1rem, 4.8vw, 4.7rem);
     line-height: 0.96;
     letter-spacing: 0;
 }
@@ -370,14 +388,18 @@ h2 {
 h3 {
     margin-bottom: 10px;
     color: var(--ink);
-    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    font-size: clamp(1.14rem, 1.9vw, 1.45rem);
     line-height: 1.12;
     letter-spacing: 0;
 }
 
 p {
-    color: var(--muted);
+    color: var(--text);
     line-height: 1.68;
+}
+
+code {
+    color: #d8e2dd;
 }
 
 .topbar {
@@ -390,16 +412,16 @@ p {
     gap: 22px;
     min-height: 72px;
     padding: 16px clamp(20px, 5vw, 72px);
-    border-bottom: 2px solid var(--blue-2);
-    background: rgba(245, 242, 237, 0.94);
-    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    background: rgba(3, 4, 5, 0.88);
+    backdrop-filter: blur(16px);
 }
 
 .brand {
     display: inline-flex;
     align-items: center;
     gap: 11px;
-    color: var(--blue-2);
+    color: var(--ink);
     font-weight: 900;
 }
 
@@ -412,49 +434,62 @@ nav {
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 8px 22px;
-    color: var(--blue-2);
+    color: var(--muted);
     font-size: 0.95rem;
     font-weight: 700;
 }
 
 nav a {
-    border-bottom: 2px solid transparent;
+    border-bottom: 1px solid transparent;
 }
 
 nav a:hover {
+    color: var(--ink);
     border-color: var(--orange);
 }
 
 .hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.52fr);
-    gap: clamp(32px, 7vw, 90px);
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.48fr);
+    gap: clamp(32px, 7vw, 92px);
     align-items: stretch;
-    padding: clamp(54px, 8vw, 104px) clamp(20px, 5vw, 72px);
+    padding: clamp(56px, 8vw, 112px) clamp(20px, 5vw, 72px);
 }
 
 .hero-copy {
+    max-width: 940px;
     padding: clamp(18px, 3vw, 30px) 0;
 }
 
 .kicker {
     margin-bottom: 14px;
-    color: var(--orange-2);
-    font-size: 0.78rem;
+    color: #d6deda;
+    font-size: 0.76rem;
     font-weight: 900;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
+.kicker::before {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 10px;
+    border-radius: 99px;
+    content: "";
+    background: var(--orange);
+}
+
 .lead {
     max-width: 820px;
     color: var(--ink);
-    font-size: clamp(1.45rem, 2.8vw, 2.3rem);
+    font-size: clamp(1.42rem, 2.7vw, 2.24rem);
     line-height: 1.22;
 }
 
 .summary {
-    max-width: 780px;
+    max-width: 790px;
+    color: var(--muted);
     font-size: 1.06rem;
 }
 
@@ -471,19 +506,21 @@ nav a:hover {
     justify-content: center;
     min-height: 46px;
     padding: 12px 17px;
-    border: 2px solid var(--blue-2);
-    border-radius: 4px;
+    border: 1px solid var(--line-strong);
+    border-radius: 5px;
+    color: var(--ink);
+    background: #0b0f11;
     font-weight: 900;
 }
 
 .button.primary {
-    color: var(--white);
-    background: var(--blue-2);
+    border-color: rgba(231, 89, 15, 0.5);
+    box-shadow: inset 3px 0 0 var(--orange);
 }
 
 .button.secondary {
-    color: var(--blue-2);
-    background: var(--orange-3);
+    border-color: rgba(79, 110, 145, 0.6);
+    box-shadow: inset 3px 0 0 var(--blue);
 }
 
 .identity-panel {
@@ -492,17 +529,18 @@ nav a:hover {
     justify-content: space-between;
     min-height: 560px;
     padding: clamp(24px, 4vw, 38px);
-    border: 2px solid var(--blue-2);
-    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
     background:
-        linear-gradient(135deg, var(--blue-3), transparent 55%),
-        var(--white);
-    box-shadow: 12px 12px 0 var(--orange);
+        linear-gradient(145deg, rgba(79, 110, 145, 0.08), transparent 42%),
+        linear-gradient(315deg, rgba(231, 89, 15, 0.055), transparent 44%),
+        var(--panel);
 }
 
 .identity-panel img {
-    width: min(100%, 360px);
+    width: min(100%, 340px);
     align-self: center;
+    opacity: 0.94;
 }
 
 .identity-panel dl {
@@ -510,27 +548,35 @@ nav a:hover {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1px;
     margin: 34px 0 0;
-    border: 1px solid var(--blue-2);
-    background: var(--blue-2);
+    border: 1px solid var(--line);
+    background: var(--line);
 }
 
 .identity-panel div {
     padding: 14px;
-    background: var(--white);
+    background: #0b1012;
 }
 
 .identity-panel dt {
-    color: var(--orange-2);
-    font-size: 0.76rem;
+    color: var(--muted);
+    font-size: 0.74rem;
     font-weight: 900;
     text-transform: uppercase;
 }
 
 .identity-panel dd {
     margin: 4px 0 0;
-    color: var(--blue-2);
-    font-size: 1.15rem;
+    color: var(--ink);
+    font-size: 1.12rem;
     font-weight: 900;
+}
+
+.identity-panel div:nth-child(odd) dd {
+    color: #c9d6e6;
+}
+
+.identity-panel div:nth-child(even) dd {
+    color: #f0b08b;
 }
 
 .rule {
@@ -539,27 +585,38 @@ nav a:hover {
     gap: 24px;
     align-items: baseline;
     padding: clamp(30px, 5vw, 54px) clamp(20px, 5vw, 72px);
-    color: var(--white);
-    background: var(--blue-2);
+    border-block: 1px solid var(--line);
+    background:
+        linear-gradient(90deg, var(--orange-faint), transparent 36%, var(--blue-faint)),
+        #060809;
 }
 
 .rule span {
-    color: var(--orange-3);
+    color: var(--muted);
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 900;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
 .rule strong {
-    font-size: clamp(1.8rem, 4.6vw, 4.8rem);
+    color: var(--ink);
+    font-size: clamp(1.65rem, 4.2vw, 4.35rem);
     line-height: 1;
 }
 
 .section,
 .deploy {
-    padding: clamp(54px, 8vw, 104px) clamp(20px, 5vw, 72px);
+    padding: clamp(56px, 8vw, 108px) clamp(20px, 5vw, 72px);
+}
+
+.section:nth-of-type(odd) {
+    background: var(--section);
+}
+
+.section:nth-of-type(even) {
+    background: var(--section-alt);
 }
 
 .section-title {
@@ -570,7 +627,7 @@ nav a:hover {
 .planes {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+    gap: 14px;
 }
 
 .planes article,
@@ -580,9 +637,9 @@ nav a:hover {
 .manual-card,
 .table-wrap,
 .deploy pre {
-    border: 2px solid var(--blue-2);
-    border-radius: 8px;
-    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
 }
 
 .planes article {
@@ -590,24 +647,34 @@ nav a:hover {
     padding: 24px;
 }
 
+.planes article:nth-child(2) {
+    background:
+        linear-gradient(135deg, rgba(231, 89, 15, 0.06), transparent 46%),
+        var(--panel);
+}
+
 .label {
     display: inline-flex;
     margin-bottom: 64px;
     padding: 6px 9px;
-    border-radius: 3px;
-    color: var(--white);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    color: var(--text);
+    background: #0a0e10;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 900;
     text-transform: uppercase;
 }
 
 .label.blue {
-    background: var(--blue);
+    border-color: rgba(79, 110, 145, 0.58);
+    box-shadow: inset 0 -2px 0 var(--blue);
 }
 
 .label.orange {
-    background: var(--orange);
+    border-color: rgba(231, 89, 15, 0.5);
+    box-shadow: inset 0 -2px 0 var(--orange);
 }
 
 .split {
@@ -615,8 +682,10 @@ nav a:hover {
     grid-template-columns: minmax(0, 0.7fr) minmax(360px, 1fr);
     gap: clamp(28px, 6vw, 82px);
     align-items: start;
-    border-block: 2px solid var(--line);
-    background: rgba(255, 250, 243, 0.52);
+    border-block: 1px solid var(--line);
+    background:
+        linear-gradient(120deg, var(--blue-faint), transparent 32%, var(--orange-faint)),
+        #070a0b;
 }
 
 .table-wrap {
@@ -627,7 +696,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     min-width: 640px;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
 }
 
 th,
@@ -639,12 +708,19 @@ td {
 }
 
 th {
-    color: var(--white);
-    background: var(--blue-2);
+    color: var(--muted);
+    background: #0a0e10;
+    font-size: 0.74rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+td {
+    color: var(--text);
 }
 
 td:first-child code {
-    color: var(--orange-2);
+    color: #f0b08b;
     font-weight: 900;
 }
 
@@ -655,16 +731,18 @@ tr:last-child td {
 .developer {
     display: grid;
     grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1fr);
-    gap: 16px;
+    gap: 14px;
 }
 
 .manual-card {
     padding: 24px;
-    background: var(--blue-2);
+    background:
+        linear-gradient(135deg, rgba(79, 110, 145, 0.08), transparent 48%),
+        #080b0d;
 }
 
-.manual-card .kicker {
-    color: var(--orange-3);
+.manual-card .kicker::before {
+    background: var(--blue);
 }
 
 pre {
@@ -673,24 +751,28 @@ pre {
 }
 
 pre code {
-    color: #f7efe5;
-    line-height: 1.7;
+    color: #dce4e0;
+    line-height: 1.72;
 }
 
 .notes {
     display: grid;
-    gap: 16px;
+    gap: 14px;
 }
 
 .notes article {
     padding: 22px;
-    border-color: var(--orange-2);
+    background: var(--panel);
+}
+
+.notes article:nth-child(2) {
+    border-color: rgba(231, 89, 15, 0.22);
 }
 
 .checks {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
+    gap: 14px;
 }
 
 .checks article {
@@ -701,13 +783,15 @@ pre code {
 .checks strong {
     display: inline-flex;
     margin-bottom: 54px;
-    color: var(--orange);
+    color: #f0b08b;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
 }
 
 .roadmap {
-    background: linear-gradient(180deg, transparent, rgba(79, 110, 145, 0.08));
+    background:
+        linear-gradient(180deg, rgba(79, 110, 145, 0.055), transparent 42%),
+        var(--section);
 }
 
 .phases {
@@ -724,11 +808,15 @@ pre code {
 .phase span {
     display: inline-flex;
     margin-bottom: 52px;
-    color: var(--orange-2);
+    color: #aebed0;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     font-weight: 900;
     text-transform: uppercase;
+}
+
+.phase:nth-child(odd) span {
+    color: #f0b08b;
 }
 
 .deploy {
@@ -736,8 +824,10 @@ pre code {
     grid-template-columns: minmax(0, 0.8fr) minmax(280px, 0.5fr);
     gap: clamp(24px, 6vw, 72px);
     align-items: center;
-    border-top: 2px solid var(--blue-2);
-    background: var(--paper-2);
+    border-top: 1px solid var(--line);
+    background:
+        linear-gradient(90deg, var(--orange-faint), transparent 35%, var(--blue-faint)),
+        #060809;
 }
 
 .deploy p {
@@ -746,7 +836,7 @@ pre code {
 
 .deploy pre {
     padding: 22px;
-    background: var(--blue-2);
+    background: #080b0d;
 }
 
 footer {
@@ -755,13 +845,14 @@ footer {
     justify-content: space-between;
     gap: 18px;
     padding: 28px clamp(20px, 5vw, 72px);
-    border-top: 2px solid var(--blue-2);
-    background: var(--white);
+    border-top: 1px solid var(--line);
+    background: #030405;
 }
 
 footer p {
     max-width: 680px;
     margin: 0;
+    color: var(--muted);
     text-align: right;
 }
 
@@ -805,10 +896,6 @@ footer p {
 
     .button {
         width: 100%;
-    }
-
-    .identity-panel {
-        box-shadow: 7px 7px 0 var(--orange);
     }
 
     footer {
