@@ -8,7 +8,7 @@
    version="1.1"
    id="svg1"
    xml:space="preserve"
-   inkscape:export-filename="onyx.svg"
+   inkscape:export-filename="onix.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    sodipodi:docname="onix.svg"
@@ -48,7 +48,7 @@
      id="layer1"><g
        id="g2"
        transform="translate(1.5875)"><path
-         style="fill:#243242;fill-opacity:1;stroke-width:0.551467;stroke-linecap:round;stroke-linejoin:bevel"
+         style="fill:#4f6e91;fill-opacity:1;stroke-width:0.551467;stroke-linecap:round;stroke-linejoin:bevel"
          d="m 53.466507,18.604731 18.43324,31.92731 c 12.16999,-3.309734 48.913203,-2.957995 55.863563,1.054805 7.61767,4.398065 29.32043,41.98835 29.32043,50.784484 1e-5,8.02559 -18.0672,40.02163 -27.01855,48.90621 l 18.43324,31.92731 c 13.98624,-12.30519 45.31965,-67.35509 45.31963,-80.8339 1e-5,-14.306238 -35.29795,-75.444098 -47.68752,-82.597221 -11.67299,-6.739405 -75.014303,-7.128838 -92.664033,-1.168998 z"
          id="path2" /><path
          style="fill:#e7590f;fill-opacity:1;stroke-width:0.551467;stroke-linecap:round;stroke-linejoin:bevel"
